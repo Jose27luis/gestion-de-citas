@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista formulario del wizard -->
+        <record id="view_appointment_cancel_wizard_form" model="ir.ui.view">
+            <field name="name">appointment.cancel.wizard.form</field>
+            <field name="model">appointment.cancel.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Cancelar Cita">
+                    <group>
+                        <field name="appointment_id" invisible="1"/>
+                        <field name="cancellation_reason" placeholder="Escriba el motivo de la cancelación..."/>
+                    </group>
+                    <footer>
+                        <button string="Confirmar Cancelación" type="object" name="action_confirm_cancel" class="btn-primary"/>
+                        <button string="Volver" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

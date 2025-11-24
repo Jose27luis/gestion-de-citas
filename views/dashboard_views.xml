@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hospital_dashboard" model="ir.ui.view">
+            <field name="name">hospital.dashboard</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard">
+                    <field name="appointment_date"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="container o_kanban_card_content">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h4><field name="patient_id"/></h4>
+                                        <p><field name="appointment_date"/></p>
+                                        <p><field name="doctor_id"/></p>
+                                        <span class="badge"><field name="state"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="action_hospital_dashboard" model="ir.actions.act_window">
+            <field name="name">Dashboard Hospital</field>
+            <field name="res_model">hospital.appointment</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="view_id" ref="view_hospital_dashboard"/>
+        </record>
+
+    </data>
+</odoo>

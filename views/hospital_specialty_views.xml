@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hospital_specialty_form" model="ir.ui.view">
+            <field name="name">hospital.specialty.form</field>
+            <field name="model">hospital.specialty</field>
+            <field name="arch" type="xml">
+                <form string="Especialidad">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="appointment_duration" widget="float_time"/>
+                            <field name="color" widget="color"/>
+                            <field name="active"/>
+                        </group>
+                        <field name="description"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hospital_specialty_tree" model="ir.ui.view">
+            <field name="name">hospital.specialty.tree</field>
+            <field name="model">hospital.specialty</field>
+            <field name="arch" type="xml">
+                <list string="Especialidades">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="doctor_count"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_hospital_specialty" model="ir.actions.act_window">
+            <field name="name">Especialidades</field>
+            <field name="res_model">hospital.specialty</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

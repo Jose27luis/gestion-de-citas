@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ESPECIALIDADES -->
+        <record id="specialty_cardiologia" model="hospital.specialty">
+            <field name="name">Cardiología</field>
+            <field name="code">CARD</field>
+            <field name="description">Especialidad médica en Cardiología</field>
+        </record>
+        
+        <record id="specialty_pediatria" model="hospital.specialty">
+            <field name="name">Pediatría</field>
+            <field name="code">PED</field>
+            <field name="description">Especialidad médica en Pediatría</field>
+        </record>
+        
+        <record id="specialty_general" model="hospital.specialty">
+            <field name="name">Medicina General</field>
+            <field name="code">MED</field>
+            <field name="description">Atención médica general</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Website: Appointment Booking Page -->
+        <template id="website_appointment_booking" name="Appointment Booking">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure">
+                    <section class="s_cover parallax s_parallax_is_fixed pt96 pb96" style="background-image: url('/web/image/website.s_cover_default'); background-position: center;">
+                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_cover_default'); background-position: center;"/>
+                        <div class="o_we_bg_filter bg-black-50"/>
+                        <div class="container">
+                            <h1 class="text-white">Reservar Cita Médica</h1>
+                            <p class="lead text-white">Hospital Santa Rosa - Sistema de Citas Online</p>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <form id="appointment_booking_form" action="/appointments/booking/create" method="POST" class="s_website_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>1. Seleccione Especialidad</h3>
+                                        <div class="form-group">
+                                            <label for="specialty_id">Especialidad *</label>
+                                            <select name="specialty_id" id="specialty_id" class="form-control" required="required">
+                                                <option value="">-- Seleccione --</option>
+                                                <t t-foreach="specialties" t-as="specialty">
+                                                    <option t-att-value="specialty.id"><t t-esc="specialty.name"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>2. Seleccione Doctor</h3>
+                                        <div class="form-group">
+                                            <label for="doctor_id">Doctor *</label>
+                                            <select name="doctor_id" id="doctor_id" class="form-control" required="required" disabled="disabled">
+                                                <option value="">-- Primero seleccione especialidad --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h3>3. Seleccione Fecha y Hora</h3>
+                                        <div class="form-group">
+                                            <label for="appointment_date">Fecha *</label>
+                                            <input type="date" name="appointment_date" id="appointment_date" class="form-control" required="required" disabled="disabled"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="appointment_time">Hora Disponible *</label>
+                                            <select name="appointment_datetime" id="appointment_time" class="form-control" required="required" disabled="disabled">
+                                                <option value="">-- Seleccione fecha --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>4. Motivo de la Consulta</h3>
+                                        <div class="form-group">
+                                            <label for="reason">Motivo</label>
+                                            <textarea name="reason" id="reason" class="form-control" rows="3" placeholder="Describa brevemente el motivo de su consulta..."/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>5. Datos del Paciente</h3>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="patient_name">Nombre Completo *</label>
+                                            <input type="text" name="patient_name" id="patient_name" class="form-control" required="required"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="identification_id">DNI/Cédula *</label>
+                                            <input type="text" name="identification_id" id="identification_id" class="form-control" required="required"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="phone">Teléfono *</label>
+                                            <input type="tel" name="phone" id="phone" class="form-control" required="required"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" name="email" id="email" class="form-control" required="required"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-12 text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fa fa-calendar-check-o"/> Reservar Cita
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Website: Booking Success -->
+        <template id="website_booking_success" name="Booking Success">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure">
+                    <section class="s_text_block pt96 pb96">
+                        <div class="container">
+                            <div class="alert alert-success text-center">
+                                <h1><i class="fa fa-check-circle"/> ¡Cita Reservada Exitosamente!</h1>
+                                <p class="lead">Su cita ha sido registrada con el número: <strong t-esc="appointment.name"/></p>
+                                <p>Recibirá un correo electrónico de confirmación a: <strong t-esc="appointment.patient_id.email"/></p>
+                                <hr/>
+                                <p><strong>Detalles de la Cita:</strong></p>
+                                <p>
+                                    <strong>Doctor:</strong> <span t-field="appointment.doctor_id"/><br/>
+                                    <strong>Fecha y Hora:</strong> <span t-field="appointment.appointment_date"/><br/>
+                                    <strong>Especialidad:</strong> <span t-field="appointment.specialty_id"/><br/>
+                                </p>
+                                <p class="mt-4">
+                                    <a href="/appointments/booking" class="btn btn-primary">Reservar Otra Cita</a>
+                                    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Website: Booking Error -->
+        <template id="website_booking_error" name="Booking Error">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure">
+                    <section class="s_text_block pt96 pb96">
+                        <div class="container">
+                            <div class="alert alert-danger text-center">
+                                <h1><i class="fa fa-exclamation-triangle"/> Error al Reservar Cita</h1>
+                                <p class="lead">Ha ocurrido un error al procesar su solicitud.</p>
+                                <p><strong>Error:</strong> <span t-esc="error"/></p>
+                                <p class="mt-4">
+                                    <a href="/appointments/booking" class="btn btn-primary">Intentar Nuevamente</a>
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

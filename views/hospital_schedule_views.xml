@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hospital_schedule_tree" model="ir.ui.view">
+            <field name="name">hospital.schedule.tree</field>
+            <field name="model">hospital.schedule</field>
+            <field name="arch" type="xml">
+                <list string="Horarios" editable="bottom">
+                    <field name="doctor_id"/>
+                    <field name="day_of_week"/>
+                    <field name="hour_from" widget="float_time"/>
+                    <field name="hour_to" widget="float_time"/>
+                    <field name="slot_duration"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_hospital_schedule" model="ir.actions.act_window">
+            <field name="name">Horarios</field>
+            <field name="res_model">hospital.schedule</field>
+            <field name="view_mode">list</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,19 @@
+/* Website Booking Styles */
+#appointment_booking_form {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+#appointment_booking_form h3 {
+    color: #2c3e50;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid #3498db;
+    padding-left: 15px;
+}
+
+.form-control:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Report Action -->
+        <record id="action_report_prescription" model="ir.actions.report">
+            <field name="name">Receta Médica</field>
+            <field name="model">hospital.prescription</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">citas_hospital.report_prescription_document</field>
+            <field name="report_file">citas_hospital.report_prescription_document</field>
+            <field name="binding_model_id" ref="model_hospital_prescription"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">'Receta - %s' % (object.name)</field>
+        </record>
+
+        <!-- Report Template -->
+        <template id="report_prescription_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <!-- Header -->
+                            <div class="row" style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                                <div class="col-8">
+                                    <h2 style="color: #2c3e50; margin: 0;">Hospital Santa Rosa</h2>
+                                    <p style="margin: 5px 0;">Receta Médica</p>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <h3 style="color: #e74c3c; margin: 0;"><span t-field="o.name"/></h3>
+                                    <p style="margin: 5px 0;"><span t-field="o.prescription_date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></p>
+                                </div>
+                            </div>
+
+                            <!-- Patient and Doctor Info -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <h5 style="background-color: #ecf0f1; padding: 5px; margin-bottom: 10px;">Datos del Paciente</h5>
+                                    <p style="margin: 2px 0;"><strong>Nombre:</strong> <span t-field="o.patient_id.name"/></p>
+                                    <p style="margin: 2px 0;"><strong>DNI:</strong> <span t-field="o.patient_id.identification_id"/></p>
+                                    <p style="margin: 2px 0;"><strong>Edad:</strong> <span t-field="o.patient_id.age"/> años</p>
+                                    <p style="margin: 2px 0;" t-if="o.patient_id.blood_type"><strong>Tipo de Sangre:</strong> <span t-field="o.patient_id.blood_type"/></p>
+                                </div>
+                                <div class="col-6">
+                                    <h5 style="background-color: #ecf0f1; padding: 5px; margin-bottom: 10px;">Datos del Médico</h5>
+                                    <p style="margin: 2px 0;"><strong>Doctor:</strong> <span t-field="o.doctor_id.name"/></p>
+                                    <p style="margin: 2px 0;"><strong>Licencia:</strong> <span t-field="o.doctor_id.license_number"/></p>
+                                    <p style="margin: 2px 0;"><strong>Especialidad:</strong> <t t-foreach="o.doctor_id.specialty_ids" t-as="spec"><span t-field="spec.name"/><t t-if="not spec_last">, </t></t></p>
+                                </div>
+                            </div>
+
+                            <!-- Diagnosis -->
+                            <t t-if="o.diagnosis">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <h5 style="background-color: #3498db; color: white; padding: 5px; margin-bottom: 10px;">Diagnóstico</h5>
+                                        <p style="padding: 10px; background-color: #ecf0f1;"><span t-field="o.diagnosis"/></p>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Prescription Lines -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h5 style="background-color: #3498db; color: white; padding: 5px; margin-bottom: 10px;">Medicamentos Recetados</h5>
+                                    <table class="table table-bordered table-sm">
+                                        <thead style="background-color: #ecf0f1;">
+                                            <tr>
+                                                <th>Medicamento</th>
+                                                <th class="text-center">Cantidad</th>
+                                                <th>Dosis</th>
+                                                <th>Frecuencia</th>
+                                                <th>Duración</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="o.line_ids" t-as="line">
+                                                <tr>
+                                                    <td><strong><span t-field="line.product_id.name"/></strong></td>
+                                                    <td class="text-center"><span t-field="line.quantity"/></td>
+                                                    <td><span t-field="line.dosage"/></td>
+                                                    <td><span t-field="line.frequency"/></td>
+                                                    <td><span t-field="line.duration"/></td>
+                                                </tr>
+                                                <tr t-if="line.instructions">
+                                                    <td colspan="5" style="background-color: #fffacd; padding: 5px;">
+                                                        <em>Instrucciones: <span t-field="line.instructions"/></em>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- General Instructions -->
+                            <t t-if="o.general_instructions">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <h5 style="background-color: #3498db; color: white; padding: 5px; margin-bottom: 10px;">Instrucciones Generales</h5>
+                                        <div style="padding: 10px; background-color: #ecf0f1;">
+                                            <span t-field="o.general_instructions"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Footer -->
+                            <div class="row mt-5">
+                                <div class="col-6">
+                                    <p style="margin: 2px 0;"><strong>Válida hasta:</strong> <span t-field="o.expiry_date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></p>
+                                    <p style="margin: 2px 0; font-size: 11px; color: #7f8c8d;">Esta receta es válida por <span t-field="o.validity_days"/> días desde su emisión.</p>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <div style="border-top: 1px solid #000; display: inline-block; padding-top: 5px; min-width: 200px;">
+                                        <p style="margin: 0; font-weight: bold;"><span t-field="o.doctor_id.name"/></p>
+                                        <p style="margin: 0; font-size: 11px;">Lic. <span t-field="o.doctor_id.license_number"/></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Warning -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div style="border: 2px solid #e74c3c; padding: 10px; background-color: #ffe6e6;">
+                                        <p style="margin: 0; font-size: 11px; text-align: center;"><strong>IMPORTANTE:</strong> Esta receta es personal e intransferible. No automedicarse. Consulte a su médico ante cualquier duda.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

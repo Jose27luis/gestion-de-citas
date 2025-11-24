@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Categoría del módulo -->
+        <record id="module_category_hospital" model="ir.module.category">
+            <field name="name">Hospital</field>
+            <field name="description">Gestión de Citas y Recetas del Hospital</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Grupo: Paciente (Portal) -->
+        <record id="group_hospital_patient" model="res.groups">
+            <field name="name">Hospital: Paciente</field>
+            <field name="category_id" ref="module_category_hospital"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="comment">Acceso de portal para pacientes</field>
+        </record>
+
+        <!-- Grupo: Recepcionista -->
+        <record id="group_hospital_receptionist" model="res.groups">
+            <field name="name">Hospital: Recepcionista</field>
+            <field name="category_id" ref="module_category_hospital"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Puede crear y gestionar citas</field>
+        </record>
+
+        <!-- Grupo: Doctor -->
+        <record id="group_hospital_doctor" model="res.groups">
+            <field name="name">Hospital: Doctor</field>
+            <field name="category_id" ref="module_category_hospital"/>
+            <field name="implied_ids" eval="[(4, ref('group_hospital_receptionist'))]"/>
+            <field name="comment">Puede gestionar citas y crear recetas</field>
+        </record>
+
+        <!-- Grupo: Farmacéutico -->
+        <record id="group_hospital_pharmacist" model="res.groups">
+            <field name="name">Hospital: Farmacéutico</field>
+            <field name="category_id" ref="module_category_hospital"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Puede dispensar recetas y gestionar stock de medicamentos</field>
+        </record>
+
+        <!-- Grupo: Manager -->
+        <record id="group_hospital_manager" model="res.groups">
+            <field name="name">Hospital: Manager</field>
+            <field name="category_id" ref="module_category_hospital"/>
+            <field name="implied_ids" eval="[(4, ref('group_hospital_doctor')), (4, ref('group_hospital_pharmacist'))]"/>
+            <field name="comment">Acceso total al módulo de hospital</field>
+        </record>
+
+        <!-- Reglas de registro (Record Rules) -->
+        
+        <!-- Pacientes: Portal solo ve sus propios datos -->
+        <record id="hospital_patient_portal_rule" model="ir.rule">
+            <field name="name">Portal: Ver solo sus datos</field>
+            <field name="model_id" ref="model_hospital_patient"/>
+            <field name="domain_force">[('partner_id.user_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_patient'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Pacientes: Usuarios internos ven todos -->
+        <record id="hospital_patient_user_rule" model="ir.rule">
+            <field name="name">Usuario: Ver todos los pacientes</field>
+            <field name="model_id" ref="model_hospital_patient"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_receptionist'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Citas: Portal solo ve sus propias citas -->
+        <record id="hospital_appointment_portal_rule" model="ir.rule">
+            <field name="name">Portal: Ver solo sus citas</field>
+            <field name="model_id" ref="model_hospital_appointment"/>
+            <field name="domain_force">[('patient_id.partner_id.user_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_patient'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Citas: Doctores ven sus propias citas -->
+        <record id="hospital_appointment_doctor_rule" model="ir.rule">
+            <field name="name">Doctor: Ver sus citas</field>
+            <field name="model_id" ref="model_hospital_appointment"/>
+            <field name="domain_force">[('doctor_id.employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Citas: Manager ve todas -->
+        <record id="hospital_appointment_manager_rule" model="ir.rule">
+            <field name="name">Manager: Ver todas las citas</field>
+            <field name="model_id" ref="model_hospital_appointment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Recetas: Portal solo ve sus propias recetas -->
+        <record id="hospital_prescription_portal_rule" model="ir.rule">
+            <field name="name">Portal: Ver solo sus recetas</field>
+            <field name="model_id" ref="model_hospital_prescription"/>
+            <field name="domain_force">[('patient_id.partner_id.user_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_patient'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Recetas: Doctores ven sus propias recetas -->
+        <record id="hospital_prescription_doctor_rule" model="ir.rule">
+            <field name="name">Doctor: Ver sus recetas</field>
+            <field name="model_id" ref="model_hospital_prescription"/>
+            <field name="domain_force">[('doctor_id.employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Recetas: Farmacéuticos ven todas para dispensar -->
+        <record id="hospital_prescription_pharmacist_rule" model="ir.rule">
+            <field name="name">Farmacéutico: Ver todas las recetas</field>
+            <field name="model_id" ref="model_hospital_prescription"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_hospital_pharmacist'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

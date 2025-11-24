@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_product_form_inherit_medication" model="ir.ui.view">
+            <field name="name">product.product.form.inherit.medication</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Información Médica">
+                        <group>
+                            <group>
+                                <field name="is_medication"/>
+                                <field name="active_ingredient"/>
+                                <field name="concentration"/>
+                                <field name="pharmaceutical_form"/>
+                            </group>
+                            <group>
+                                <field name="requires_prescription"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="contraindications" placeholder="Contraindicaciones y advertencias..."/>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+        <record id="action_hospital_medications" model="ir.actions.act_window">
+            <field name="name">Medicamentos</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('is_medication','=',True)]</field>
+            <field name="context">{'default_is_medication': True, 'default_type': 'storable'}</field>
+        </record>
+    </data>
+</odoo>

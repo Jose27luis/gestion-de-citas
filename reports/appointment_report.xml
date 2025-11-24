@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_report_appointment" model="ir.actions.report">
+            <field name="name">Comprobante de Cita</field>
+            <field name="model">hospital.appointment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">citas_hospital.report_appointment_document</field>
+            <field name="report_file">citas_hospital.report_appointment_document</field>
+            <field name="binding_model_id" ref="model_hospital_appointment"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">'Cita - %s' % (object.name)</field>
+        </record>
+
+        <template id="report_appointment_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="text-center mb-4">
+                                <h2>Hospital Santa Rosa</h2>
+                                <h3>Comprobante de Cita Médica</h3>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h4>Número de Cita: <span t-field="o.name"/></h4>
+                                    <p>Estado: <span t-field="o.state"/></p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Paciente:</strong> <span t-field="o.patient_id.name"/><br/>
+                                    <strong>DNI:</strong> <span t-field="o.patient_id.identification_id"/><br/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Doctor:</strong> <span t-field="o.doctor_id.name"/><br/>
+                                    <strong>Especialidad:</strong> <span t-field="o.specialty_id.name"/><br/>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12" style="background-color: #3498db; color: white; padding: 15px;">
+                                    <h4 style="margin: 0;">Fecha y Hora de la Cita</h4>
+                                    <h3 style="margin: 5px 0;"><span t-field="o.appointment_date"/></h3>
+                                    <p style="margin: 0;">Consultorio: <span t-field="o.doctor_id.consultation_room"/></p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3" t-if="o.reason">
+                                <div class="col-12">
+                                    <strong>Motivo:</strong><br/>
+                                    <p><span t-field="o.reason"/></p>
+                                </div>
+                            </div>
+
+                            <div class="row mt-5">
+                                <div class="col-12 text-center">
+                                    <p><strong>Por favor llegue 15 minutos antes de su cita</strong></p>
+                                    <p>Para cancelar o reprogramar, contacte al hospital con anticipación</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

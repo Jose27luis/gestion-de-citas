@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Portal: My Appointments -->
+        <template id="portal_my_appointments" name="My Appointments">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Mis Citas</t>
+                </t>
+                <t t-if="not appointments">
+                    <div class="alert alert-warning">
+                        No tiene citas registradas.
+                    </div>
+                </t>
+                <t t-if="appointments" t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Doctor</th>
+                            <th>Especialidad</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="appointments" t-as="appointment">
+                            <tr>
+                                <td><a t-attf-href="/my/appointments/#{appointment.id}"><t t-esc="appointment.name"/></a></td>
+                                <td><span t-field="appointment.appointment_date"/></td>
+                                <td><span t-field="appointment.doctor_id"/></td>
+                                <td><span t-field="appointment.specialty_id"/></td>
+                                <td><span class="badge" t-att-class="'badge-' + ('success' if appointment.state == 'confirmed' else 'info')" t-esc="dict(appointment._fields['state'].selection).get(appointment.state)"/></td>
+                                <td>
+                                    <a t-attf-href="/my/appointments/#{appointment.id}" class="btn btn-sm btn-secondary">Ver</a>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+
+        <!-- Portal: Appointment Detail -->
+        <template id="portal_appointment_detail" name="Appointment Detail">
+            <t t-call="portal.portal_layout">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Cita <span t-field="appointment.name"/></h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Paciente:</strong> <span t-field="appointment.patient_id"/><br/>
+                                <strong>Doctor:</strong> <span t-field="appointment.doctor_id"/><br/>
+                                <strong>Especialidad:</strong> <span t-field="appointment.specialty_id"/><br/>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Fecha:</strong> <span t-field="appointment.appointment_date"/><br/>
+                                <strong>Estado:</strong> <span t-field="appointment.state"/><br/>
+                                <strong>Consultorio:</strong> <span t-field="appointment.doctor_id.consultation_room"/><br/>
+                            </div>
+                        </div>
+                        <t t-if="appointment.reason">
+                            <hr/>
+                            <strong>Motivo:</strong><br/>
+                            <p t-field="appointment.reason"/>
+                        </t>
+                        <t t-if="appointment.state in ['draft', 'confirmed']">
+                            <hr/>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#cancelModal">Cancelar Cita</button>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Portal: My Prescriptions -->
+        <template id="portal_my_prescriptions" name="My Prescriptions">
+            <t t-call="portal.portal_layout">
+                <t t-set="title">Mis Recetas</t>
+                <t t-if="not prescriptions">
+                    <div class="alert alert-warning">
+                        No tiene recetas registradas.
+                    </div>
+                </t>
+                <t t-if="prescriptions" t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Fecha</th>
+                            <th>Doctor</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="prescriptions" t-as="prescription">
+                            <tr>
+                                <td><span t-field="prescription.name"/></td>
+                                <td><span t-field="prescription.prescription_date"/></td>
+                                <td><span t-field="prescription.doctor_id"/></td>
+                                <td><span t-field="prescription.state"/></td>
+                                <td>
+                                    <a t-attf-href="/my/prescriptions/#{prescription.id}" class="btn btn-sm btn-secondary">Ver</a>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+
+        <!-- Portal: Prescription Detail -->
+        <template id="portal_prescription_detail" name="Prescription Detail">
+            <t t-call="portal.portal_layout">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Receta <span t-field="prescription.name"/></h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Paciente:</strong> <span t-field="prescription.patient_id"/><br/>
+                                <strong>Doctor:</strong> <span t-field="prescription.doctor_id"/><br/>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Fecha:</strong> <span t-field="prescription.prescription_date"/><br/>
+                                <strong>Válida hasta:</strong> <span t-field="prescription.expiry_date"/><br/>
+                                <strong>Estado:</strong> <span t-field="prescription.state"/><br/>
+                            </div>
+                        </div>
+                        <t t-if="prescription.diagnosis">
+                            <hr/>
+                            <strong>Diagnóstico:</strong><br/>
+                            <p t-field="prescription.diagnosis"/>
+                        </t>
+                        <hr/>
+                        <strong>Medicamentos:</strong>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Medicamento</th>
+                                    <th>Cantidad</th>
+                                    <th>Dosis</th>
+                                    <th>Frecuencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="prescription.line_ids" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.product_id"/></td>
+                                        <td><span t-field="line.quantity"/></td>
+                                        <td><span t-field="line.dosage"/></td>
+                                        <td><span t-field="line.frequency"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <a t-attf-href="/report/pdf/citas_hospital.report_prescription/#{prescription.id}" class="btn btn-primary" target="_blank">
+                            <i class="fa fa-download"/> Descargar PDF
+                        </a>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Portal: No Patient -->
+        <template id="portal_no_patient" name="No Patient">
+            <t t-call="portal.portal_layout">
+                <div class="alert alert-danger">
+                    No está registrado como paciente en el sistema.
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

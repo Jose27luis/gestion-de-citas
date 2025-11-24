@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vista formulario -->
+        <record id="view_hospital_appointment_form" model="ir.ui.view">
+            <field name="name">hospital.appointment.form</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <form string="Cita Médica">
+                    <header>
+                        <button name="action_confirm" string="Confirmar" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_start" string="Iniciar" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                        <button name="action_done" string="Finalizar" type="object" class="oe_highlight" invisible="state not in ['confirmed', 'in_progress']"/>
+                        <button name="action_cancel" string="Cancelar" type="object" invisible="state in ['done', 'cancelled']"/>
+                        <button name="action_create_prescription" string="Crear Receta" type="object" class="oe_highlight" invisible="state not in ['in_progress', 'done']"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="patient_id" options="{'no_create': True}"/>
+                                <field name="doctor_id" options="{'no_create': True}"/>
+                                <field name="specialty_id" options="{'no_create': True}"/>
+                            </group>
+                            <group>
+                                <field name="appointment_date"/>
+                                <field name="duration" widget="float_time"/>
+                                <field name="confirmation_date" readonly="1"/>
+                                <field name="prescription_id" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Detalles">
+                                <group>
+                                    <field name="reason" placeholder="Motivo de la consulta..."/>
+                                    <field name="notes" widget="html"/>
+                                    <field name="cancellation_reason" readonly="1" invisible="state != 'cancelled'"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vista tree -->
+        <record id="view_hospital_appointment_tree" model="ir.ui.view">
+            <field name="name">hospital.appointment.tree</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <list string="Citas" decoration-info="state=='draft'" decoration-success="state=='confirmed'" decoration-warning="state=='in_progress'" decoration-muted="state=='cancelled'">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="specialty_id"/>
+                    <field name="appointment_date"/>
+                    <field name="state" widget="badge" decoration-info="state=='draft'" decoration-success="state=='confirmed'" decoration-warning="state=='in_progress'" decoration-danger="state=='cancelled'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vista calendar -->
+        <record id="view_hospital_appointment_calendar" model="ir.ui.view">
+            <field name="name">hospital.appointment.calendar</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <calendar string="Calendario de Citas" date_start="appointment_date" color="doctor_id" mode="week">
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Vista kanban -->
+        <record id="view_hospital_appointment_kanban" model="ir.ui.view">
+            <field name="name">hospital.appointment.kanban</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="appointment_date"/>
+                    <field name="state"/>
+                    <field name="color"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                    <div><field name="patient_id"/></div>
+                                    <div><field name="doctor_id"/></div>
+                                    <div><field name="appointment_date"/></div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vista search -->
+        <record id="view_hospital_appointment_search" model="ir.ui.view">
+            <field name="name">hospital.appointment.search</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <search string="Buscar Citas">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="specialty_id"/>
+                    <filter string="Borradores" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Confirmadas" name="confirmed" domain="[('state','=','confirmed')]"/>
+                    <filter string="En Progreso" name="in_progress" domain="[('state','=','in_progress')]"/>
+                    <filter string="Hoy" name="today" domain="[('appointment_date','>=',datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),('appointment_date','&lt;=',datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
+                    <group expand="0" string="Agrupar Por">
+                        <filter string="Estado" name="state" context="{'group_by':'state'}"/>
+                        <filter string="Doctor" name="doctor" context="{'group_by':'doctor_id'}"/>
+                        <filter string="Especialidad" name="specialty" context="{'group_by':'specialty_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Acción -->
+        <record id="action_hospital_appointment" model="ir.actions.act_window">
+            <field name="name">Citas Médicas</field>
+            <field name="res_model">hospital.appointment</field>
+            <field name="view_mode">list,kanban,calendar,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear nueva cita médica
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

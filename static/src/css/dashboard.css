@@ -1,0 +1,23 @@
+/* Dashboard Styles */
+.o_hospital_dashboard {
+    padding: 20px;
+}
+
+.o_hospital_dashboard .o_kanban_card_content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.hospital_stat_box {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.hospital_stat_box h3 {
+    font-size: 36px;
+    margin: 10px 0;
+}

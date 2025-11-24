@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_hospital_doctor_form" model="ir.ui.view">
+            <field name="name">hospital.doctor.form</field>
+            <field name="model">hospital.doctor</field>
+            <field name="arch" type="xml">
+                <form string="Doctor">
+                    <sheet>
+                        <field name="image_1920" widget="image" class="oe_avatar"/>
+                        <div class="oe_button_box">
+                            <button name="action_view_appointments_today" type="object" class="oe_stat_button" icon="fa-calendar-check-o">
+                                <field name="appointment_today_count" widget="statinfo" string="Hoy"/>
+                            </button>
+                            <button name="action_view_appointments_pending" type="object" class="oe_stat_button" icon="fa-clock-o">
+                                <field name="appointment_pending_count" widget="statinfo" string="Pendientes"/>
+                            </button>
+                            <button name="action_view_prescriptions" type="object" class="oe_stat_button" icon="fa-medkit">
+                                <field name="prescription_count" widget="statinfo" string="Recetas"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="license_number"/>
+                                <field name="specialty_ids" widget="many2many_tags"/>
+                                <field name="phone" widget="phone"/>
+                                <field name="email" widget="email"/>
+                            </group>
+                            <group>
+                                <field name="employee_id"/>
+                                <field name="consultation_room"/>
+                                <field name="years_experience"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Biografía">
+                                <field name="biography" widget="html"/>
+                            </page>
+                            <page string="Horarios">
+                                <field name="schedule_ids">
+                                    <list editable="bottom">
+                                        <field name="day_of_week"/>
+                                        <field name="hour_from" widget="float_time"/>
+                                        <field name="hour_to" widget="float_time"/>
+                                        <field name="slot_duration"/>
+                                        <field name="active"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hospital_doctor_tree" model="ir.ui.view">
+            <field name="name">hospital.doctor.tree</field>
+            <field name="model">hospital.doctor</field>
+            <field name="arch" type="xml">
+                <list string="Doctores">
+                    <field name="name"/>
+                    <field name="license_number"/>
+                    <field name="specialty_ids" widget="many2many_tags"/>
+                    <field name="phone"/>
+                    <field name="consultation_room"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_hospital_doctor" model="ir.actions.act_window">
+            <field name="name">Doctores</field>
+            <field name="res_model">hospital.doctor</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>
